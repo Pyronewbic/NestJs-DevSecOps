@@ -107,7 +107,7 @@ pipeline {
                             builds[service] = { 
 							    sh """
                                 echo 'Building Service for ${service}'
-							    docker build -t ${ECR_URL}/backend-${service}:$${gitCommit} .
+							    docker -l debug build --network=host --build-arg SERVICE=$service --target production -t ${ECR_URL}/backend-${service}:$${gitCommit} .
                                 docker push ${ECR_URL}/backend-${service}:$${gitCommit}
 							    """
                             }
