@@ -1,6 +1,6 @@
 # NestJs Monorepo + Pipelines
 
-Microservices have been all the hype lately - and NestJs has begin to pick up on a lot of traction. Most folks prefer using Individual repos for each microservice - which can be a hassle to mantain in the long run, especially when it comes to setting up multiple pipelines, and individual Folders for each microservice, under a parent environment directory.
+Microservices have been all the hype lately - and NestJs has begin to pick up on a lot of traction. Most folks prefer using Individual repos for each microservice - which can be a hassle to mantain in the long run, especially when it comes to setting up multiple pipelines, and individual Folders for each microservice Yaml, under a parent environment directory.
 
 ## Simplifying the process
 
