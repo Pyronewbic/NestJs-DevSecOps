@@ -10,12 +10,14 @@ Monorepos, Helm Charts and multi-branch pipelines are an excellent way to tackle
 
 - Jenkins: This OSS CI/CD tool helps reducing dependence on a cloud provider's Build and Release tools (eg: AWS CodeDeploy, Azure DevOps), and lets you migrate providers if needed with very less overhead work required.
 - Node (LTS), NestJs
+- Docker: Image Build tool - the Dockerfile is multi-stage, and lets you build services based on the build-arg passed, making it Dynamic.
 - Helm: This templating tool helps managing individual microservice releases, and negates the need for Environment-specific folders with Kubernetes configuration.
 - A Kubernetes cluster: Feel free to use kind/minikube to provision one locally, or use provision one on the respective cloud provider.
 
 ## To-Do
 
 - [x] Pre and Post Deployment Checks
+- [ ] Docker-compose file with mounts for easy local development (supports hot reloads)
 - [ ] Use Istio as a Service Mesh
 - [ ] Include Dynamic Sonarqube runs/Quality Gate checks
 - [ ] Impliment a SAST tool to scan Static code
