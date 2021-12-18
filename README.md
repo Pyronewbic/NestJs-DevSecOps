@@ -9,11 +9,29 @@ Monorepos, Helm Charts and multi-branch pipelines are an excellent way to tackle
 ## Stack Used
 
 - Jenkins: This OSS CI/CD tool helps reducing dependence on a cloud provider's Build and Release tools (eg: AWS CodeDeploy, Azure DevOps), and lets you migrate providers if needed with very less overhead work required.
-- Node (LTS), NestJs
+- Node: (LTS), NestJs
 - Docker: Image Build tool - the Dockerfile is multi-stage, and lets you build services based on the build-arg passed, making it Dynamic.
 - Helm: This templating tool helps managing individual microservice releases, and negates the need for Environment-specific folders with Kubernetes configuration.
 - A Kubernetes cluster: Feel free to use kind/minikube to provision one locally, or use provision one on the respective cloud provider.
 
+## Setup Process
+
+- Cluster NA/NS Creation
+    - Setup Namespaces and Service accounts for your environments.
+    - Attach correct RBAC policies to the service accounts
+- EFK setup (Logging and Monitoring)
+    - Create n Persistent Volumes for Elasticsearch to use as part of it's stateful volume claim.
+    - Apply the files under ./pipelines/Kubernetes/Normal/EFK/elastic to set up ES.
+    - Setup fluentd as a daemonset to forward container logs to elasticsearch.
+    - Install Kibana to visualize logs - hit 'Discover' and add logstash* as an index.
+- Ingress Nginx
+    - Apply ./pipelines/Kubernetes/Normal/Ingress-Nginx/deploy-tls-termination.yaml if you're using AWS, otherwise install it via helm and make changes for your provider - you need to expose the service using an external loadbalancer.
+    - Create ExternalNames for your frontend services.
+    - Apply the ingress to take care of DNS/Routing to services in different namespaces. 
+- Jenkins
+    - Create a multibranch pipeline with the repository details, and include the path to the JENKINSFILE.
+    - Setup any other credentials that might be needed (eg: Artifactory/Dockerhub/ECR etc)
+    - Wait for the branches to be registered post-scan, and trigger a build on the required branch.
 ## To-Do
 
 - [x] Pre and Post Deployment Checks
