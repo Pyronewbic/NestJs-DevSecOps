@@ -1,0 +1,15 @@
+deployment:
+  image: <your container registry>/backend-common
+  tag: 0.0.1
+  user: 1000
+name: ms1
+ports: 
+  port: 15340
+  targetPort: 15340
+resources:
+  requests:
+    cpu: 256m
+    memory: 256Mi
+  limits:
+    cpu: 1024m
+    memory: 2048Mi
