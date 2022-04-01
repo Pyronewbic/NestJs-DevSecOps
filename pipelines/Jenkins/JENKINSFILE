@@ -93,6 +93,18 @@ pipeline {
                 
             }
         }
+
+        stage('Docker: Delete Image(s)'){
+            steps{
+                script{
+                    sh """
+                        echo 'Deleting All Images except the latest tag'
+                        docker images | awk -v N=2 '++freq[\$1] <= N'
+                        docker images | docker rmi -f \$(awk -v N=2 '++freq[\$1] > N {print \$3}') || true
+                    """
+                }
+            }
+        }
          
         stage('Docker: Build Image(s)'){
             when{

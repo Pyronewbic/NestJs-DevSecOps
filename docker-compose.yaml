@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+
+  common:
+    image: common
+    container_name: common-dev
+    # depends_on:
+        # - coc-client-gateway
+    build:
+      context: .
+      target: development
+      args: 
+        SERVICE: common
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev common
+    env_file:
+      - .env
+    networks:
+      - backend  
+  
+  ms1:
+    image: ms1
+    container_name: ms1-dev
+    build:
+      context: .
+      target: development
+      args: 
+        SERVICE: ms1
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev ms1
+    env_file:
+      - .env
+    networks:
+      - backend
+      
+      
+  ms2:
+    image: ms2
+    container_name: ms2-dev
+    build:
+      context: .
+      target: development
+      args: 
+        SERVICE: ms2
+    command: npm run start:dev ms2
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

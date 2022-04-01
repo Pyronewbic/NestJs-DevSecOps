@@ -32,12 +32,36 @@ Monorepos, Helm Charts and multi-branch pipelines are an excellent way to tackle
     - Create a multibranch pipeline with the repository details, and include the path to the JENKINSFILE.
     - Setup any other credentials that might be needed (eg: Artifactory/Dockerhub/ECR etc)
     - Wait for the branches to be registered post-scan, and trigger a build on the required branch.
-## To-Do
 
-- [x] Pre and Post Deployment Checks
-- [ ] Docker-compose file with mounts for easy local development (supports hot reloads)
-- [ ] Use Istio as a Service Mesh
-- [ ] Include Dynamic Sonarqube runs/Quality Gate checks
-- [ ] Impliment a SAST tool to scan Static code
-- [ ] Use a SCA tool to scan OSS dependencies
-- [ ] Include Image scanning for vulnerabilities
+## More 
+
+- Sample Istio Configuration
+    - Includes Authorisation policies
+    - Makes use of PeerAuthentication and "Strict" mode for mtls
+    - Includes a Configmap that can be used to ratelimit
+    - Has an Initial Gateway defined, and traffic is sent to a particular virtual service (based on context)
+
+## Best Practices
+
+### Security Hardening: EKS/GKE/GCP/On-prem K8s clusters
+1. Prefer using dedicated EKS Service Accounts
+2. Ensure that Service Account Tokens are only mounted where necessary
+3. Encrypt traffic to HTTPS load balancers with TLS certificates
+4. Ensure that default service accounts are not actively used
+5. Rotate your secrets periodically
+6. Scope the IAM Role (or relevant cloud vendor) trust policy for IRSA to the service account name
+7. Disable unnecessary protocols for service type
+
+### Security Hardening: Istio
+1. Upgrade to the latest stable release of the Istio
+2. Enable Service Account Secret Creation
+3. Configure third party service account tokens
+4. Configure mutual TLS for services to service communication
+5. Configure peer authentication policy with STRICT mode
+4. Status of logging with appropriate logging level
+6. Configure rate limits for requests
+7. Enable Istio authorization by creating RbacConfig named default
+8. Use default-deny patterns
+9. Use ALLOW-with-positive-matching and DENY-with-negative-match patterns
+10. Setup virtual firewall rules for services (8,9)
+11. Enable Circuit breaking automatically in case of failed requests.
