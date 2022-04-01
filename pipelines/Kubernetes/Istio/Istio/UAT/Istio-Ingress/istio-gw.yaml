@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https-cdp
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: uat-api-creds
+    hosts:
+    - "*"
+  - port:
+      number: 443
+      name: https-pv
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: uat-pv-creds
+    hosts:
+    - "*"

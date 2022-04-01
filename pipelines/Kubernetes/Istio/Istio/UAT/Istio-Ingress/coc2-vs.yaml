@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: coc-client-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-gateway
+  http:
+  - name: "coc-client-gateway2-v1"
+    match:
+    - uri:
+        prefix: "/comm-card"
+    rewrite:
+      uri: "/comm-card"
+    match:
+    - uri:
+        prefix: "/treasury"
+    rewrite:
+      uri: "/treasury"
+    route:
+    - destination:
+        host: coc-client-gateway2.deploy-uat-istio.svc.cluster.local
+        port:
+          number: 15360

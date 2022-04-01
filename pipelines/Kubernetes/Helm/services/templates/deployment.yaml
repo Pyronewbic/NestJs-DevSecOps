@@ -18,16 +18,50 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+    {{- if .Values.vault }}
+      annotations:
+        vault.hashicorp.com/agent-init-first: "true"
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/tls-skip-verify: "true"
+        vault.hashicorp.com/role: "{{ .Values.sa }}"
+        vault.hashicorp.com/agent-inject-secret-bevault: "secrets-test/test-key-vault-ms/bevault"
+        vault.hashicorp.com/agent-inject-template-bevault: |
+          {{`{{ with secret "secrets-test/test-key-vault-ms/bevault" -}}
+            export DB_HOST="{{ .Data.data.DB_HOST }}"
+            export DB_PORT="{{ .Data.data.DB_PORT }}"
+            export DB_USERNAME="{{ .Data.data.DB_USERNAME }}"
+            export DB_PASSWORD="{{ .Data.data.DB_PASSWORD }}"
+            export DB_DATABASE="{{ .Data.data.DB_DATABASE }}"
+            export DB_DATABASE2="{{ .Data.data.DB_DATABASE2 }}"
+            export REDIS_PORT="{{ .Data.data.REDIS_PORT }}"
+            export REDIS_HOST="{{ .Data.data.REDIS_HOST }}"
+            export REDIS_AUTH_PORT="{{ .Data.data.REDIS_AUTH_PORT }}"
+            export REDIS_AUTH_HOST="{{ .Data.data.REDIS_AUTH_HOST }}"
+          {{- end }}`}}
+    {{- end }}
+      creationTimestamp: null
       labels:
         app: {{ .Values.name }}
     spec:
+      hostAliases:
+      - ip: "10.23.213.264"
+        hostnames:
+        - "xyz-api.ap-south-1.amazonaws.com"
+        - "abc.execute-api.ap-south-1.amazonaws.com"
+      - ip: "10.24.158.150"
+        hostnames:
+        - "xyz-api.ap-south-1.amazonaws.com"
+        - "abc.execute-api.ap-south-1.amazonaws.com"
       serviceAccountName: "{{ .Values.sa }}"
       securityContext:
-        runAsUser: {{ .Values.deployment.user }}
+        runAsUser: 1000
         rule: "MustRunAsNonRoot"
       containers:
       - image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
         imagePullPolicy: Always
+        {{- if .Values.vault }}{{- if ne .Values.name "migration"}}
+        args: ['sh', '-c', '. /vault/secrets/bevault && node dist/apps/{{ .Values.name }}/main']
+        {{- end }}{{- end}}
         name: "{{ .Values.name }}"
         ports:
         - containerPort: {{ .Values.ports.targetPort }}
@@ -35,8 +69,10 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ .Values.config.configmap }}
+        {{- if .Values.config.secret }}
         - secretRef:
             name: {{ .Values.config.secret }}
+        {{- end}}
         resources:
           requests:
             cpu: {{ .Values.resources.requests.cpu }}
@@ -51,4 +87,6 @@ spec:
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+      - name: regcred
 status: {}
